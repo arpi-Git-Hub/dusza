@@ -17,40 +17,48 @@ const RegisterPage = () => {
   const [teacherName, setTeacherName] = useState("");
   const [category, setCategory] = useState("");
   const [language, setLanguage] = useState("");
-  const [registrationDate, setRegistrationDate] = useState(new Date().toISOString());
 
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-
-    if (!username || !password || !teamName || !schoolName || !member1Name || !member1Grade || !member2Name || !member2Grade || !member3Name || !member3Grade || !category || !language || !teacherName) {
-      alert("Minden kötelező mezőt ki kell tölteni!");
-      return;
-    }
-
-    const newTeam = {
+    const payload = {
       username,
       password,
-      teamName,
-      schoolName,
-      member1: { name: member1Name, grade: member1Grade },
-      member2: { name: member2Name, grade: member2Grade },
-      member3: { name: member3Name, grade: member3Grade },
-      substitute: substituteName ? { name: substituteName, grade: substituteGrade } : null,
-      teacherName,
+      team_name: teamName,
+      school_name: schoolName,
+      member1_name: member1Name,
+      member1_grade: member1Grade,
+      member2_name: member2Name,
+      member2_grade: member2Grade,
+      member3_name: member3Name,
+      member3_grade: member3Grade,
+      substitute_name: substituteName,
+      substitute_grade: substituteGrade,
+      teacher_name: teacherName,
       category,
-      language,
-      registrationDate
+      programming_language: language,
     };
-
-    const storedTeams = JSON.parse(localStorage.getItem("teams")) || [];
-    storedTeams.push(newTeam);
-    localStorage.setItem("teams", JSON.stringify(storedTeams));
-
-    alert("Sikeres regisztráció!");
-    navigate("/login");
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/auth/register/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      if (response.ok) {
+        navigate("/");
+      } else {
+        const errorData = await response.json();
+        alert(`A regisztráció nem sikerült: ${errorData.error || "Ismeretlen hiba"}`);
+      }
+    } catch (error) {
+      console.error("Hiba:", error);
+      alert("Hiba történt a regisztráció során.");
+    }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-400 to-blue-600">

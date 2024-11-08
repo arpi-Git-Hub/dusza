@@ -20,7 +20,7 @@ const Header = () => {
     <header className="bg-blue-600 text-white py-4">
       <div className="container mx-auto flex justify-between items-center">
         <div>
-          <Link to="/" className="text-xl font-semibold">Csapatkezelő</Link>
+          <Link to="/" className="text-xl font-semibold pl-6">Csapatkezelő</Link>
         </div>
 
         <div className="space-x-6">
@@ -33,8 +33,8 @@ const Header = () => {
             {/* Különböző navigációs lehetőségek az admin és a felhasználó számára */}
             {!username ? (
               <>
-                <Link to="/" className="hover:underline">Bejelentkezés</Link>
-                <Link to="/register" className="hover:underline">Regisztráció</Link>
+                <Link to="/" className="hover:underline pl-6 pr-3">Bejelentkezés</Link>
+                <Link to="/register" className="hover:underline pr-6 pl-3">Regisztráció</Link>
               </>
             ) : (
               <>

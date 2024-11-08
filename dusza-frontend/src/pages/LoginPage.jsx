@@ -6,31 +6,44 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    // Ellenőrizni, hogy a felhasználónév és jelszó helyes-e
-    const storedTeams = JSON.parse(localStorage.getItem("teams")) || [];
-    const adminPassword = "admin123"; // Admin jelszó
-
-    // Admin bejelentkezés
-    if (username === "admin" && password === adminPassword) {
-      localStorage.setItem("isAdmin", "true");
-      navigate("/admin-dashboard");
-      return;
-    }
-
-    // Felhasználói bejelentkezés
-    const userTeam = storedTeams.find(
-      (team) => team.username === username && team.password === password
-    );
-
-    if (userTeam) {
-      localStorage.setItem("isAdmin", "false");
-      localStorage.setItem("loggedInUser", JSON.stringify(userTeam));
-      navigate("/user-dashboard");
-    } else {
-      alert("Hibás felhasználónév vagy jelszó!");
+    const payload = { username, password };
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/auth/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      const data = await response.json();
+      console.log("Server response:", data);  // Kiírjuk a válaszadatokat a konzolra
+  
+      if (response.ok) {
+        if (data.access && data.refresh && data.user_data) {
+          localStorage.setItem("accessToken", data.access);
+          localStorage.setItem("refreshToken", data.refresh);
+          localStorage.setItem("loggedInUser", JSON.stringify(data.user_data));
+          
+          // Ellenőrizzük, hogy az admin jogosultságú felhasználóról van-e szó
+          const isAdmin = data.user_data.role === 'admin'; // Az admin jogosultságok ellenőrzése
+          if (isAdmin) {
+            localStorage.setItem("isAdmin", "true"); // Tároljuk el az admin státuszt
+            navigate("/admin-dashboard"); // Ha admin, irányítsuk az admin dashboardra
+          } else {
+            localStorage.setItem("isAdmin", "false"); // Ha nem admin, tároljuk el a nem admin státuszt
+            navigate("/user-dashboard"); // Ha nem admin, irányítsuk a user dashboardra
+          }
+        } else {
+          alert("Hiba történt a válaszban, hiányoznak az adatok.");
+        }
+      } else {
+        alert("Érvénytelen felhasználónév vagy jelszó!");
+      }
+    } catch (error) {
+      console.error("Hiba a bejelentkezés során:", error);
+      alert("Hiba történt a bejelentkezés során.");
     }
   };
 
@@ -66,12 +79,12 @@ const LoginPage = () => {
               type="submit"
               className="w-full p-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              Belépés
+              Bejelentkezés
             </button>
           </div>
           <div className="flex justify-center mt-4">
             <p className="text-sm text-gray-600">
-              Nincs fiókod? <a href="/register" className="text-blue-600 hover:underline">Regisztrálj itt!</a>
+              Még nincs fiókod? <a href="/register" className="text-blue-600 hover:underline">Regisztrálj itt!</a>
             </p>
           </div>
         </form>
