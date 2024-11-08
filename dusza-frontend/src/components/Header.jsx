@@ -1,42 +1,61 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isLoggedIn = false; // Teszt állapot, ezt a backend biztosítja
+  const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const handleLogout = () => {
+    // Kijelentkezés: Töröljük a bejelentkezési adatokat a localStorage-ból
+    localStorage.removeItem("isAdmin");
+    localStorage.removeItem("username");
+    localStorage.removeItem("teamName");
+    localStorage.removeItem("schoolName");
+    localStorage.removeItem("teacherName");
+    navigate("/"); // Visszairányítunk a bejelentkezési oldalra
   };
 
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  const username = localStorage.getItem("username");
+
   return (
-    <header className="bg-blue-600 text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center justify-between">
-          <div className="text-2xl font-bold">DUSZA</div>
-          <div className="hidden md:flex space-x-8">
-            <Link to="/" className="text-white hover:text-gray-300">Főoldal</Link>
-            <Link to="/register" className="text-white hover:text-gray-300">Regisztráció</Link>
-            <Link to="/login" className="text-white hover:text-gray-300">Bejelentkezés</Link>
-            {isLoggedIn && <Link to="/dashboard" className="text-white hover:text-gray-300">Dashboard</Link>}
-          </div>
-          <div className="md:hidden">
-            <button onClick={toggleMenu} className="text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-              </svg>
-            </button>
-          </div>
+    <header className="bg-blue-600 text-white py-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <div>
+          <Link to="/" className="text-xl font-semibold">Csapatkezelő</Link>
         </div>
 
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 space-y-4">
-            <Link to="/" className="block text-white hover:text-gray-300">Főoldal</Link>
-            <Link to="/register" className="block text-white hover:text-gray-300">Regisztráció</Link>
-            <Link to="/login" className="block text-white hover:text-gray-300">Bejelentkezés</Link>
-            {isLoggedIn && <Link to="/dashboard" className="block text-white hover:text-gray-300">Dashboard</Link>}
-          </div>
-        )}
+        <div className="space-x-6">
+          {/* Ha be van jelentkezve felhasználó */}
+          {username && (
+            <span className="text-lg">{`Üdv, ${username}`}</span>
+          )}
+
+          <nav className="flex items-center space-x-4">
+            {/* Különböző navigációs lehetőségek az admin és a felhasználó számára */}
+            {!username ? (
+              <>
+                <Link to="/" className="hover:underline">Bejelentkezés</Link>
+                <Link to="/register" className="hover:underline">Regisztráció</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/user-dashboard" className="hover:underline">
+                  Felhasználói felület
+                </Link>
+                {isAdmin && (
+                  <Link to="/admin-dashboard" className="hover:underline">
+                    Admin felület
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                >
+                  Kijelentkezés
+                </button>
+              </>
+            )}
+          </nav>
+        </div>
       </div>
     </header>
   );
