@@ -29,7 +29,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center py-12 px-6">
+    <div className="min-h-screen bg-gradient-to-r from-blue-400 to-blue-600 flex justify-center items-center py-12 px-6">
       <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-8">
         <h2 className="text-3xl font-bold text-center text-blue-600 mb-8">Csapat adatainak módosítása</h2>
 

@@ -49,7 +49,7 @@ const RegisterPage = () => {
     localStorage.setItem("teams", JSON.stringify(storedTeams));
 
     alert("Sikeres regisztráció!");
-    navigate("/login");
+    navigate("/");
   };
 
   return (
