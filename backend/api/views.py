@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from regisztracio.models import UserData
+from .models import Category, ProgrammingLanguage
 
 class TeamData(APIView):
     permission_classes = [IsAuthenticated]
@@ -21,8 +22,8 @@ class TeamData(APIView):
                 ],
                 'substitute': {'name': team_data.substitute_name, 'grade': team_data.substitute_grade},
                 'teacher_name': team_data.teacher_name,
-                'category': team_data.category,
-                'programming_language': team_data.programming_language,
+                'category': team_data.category.name,
+                'programming_language': team_data.programming_language.name,
             })
         except UserData.DoesNotExist:
             return Response({'error': 'Team data not found'}, status=404)
@@ -44,8 +45,8 @@ class TeamData(APIView):
             team_data.substitute_name = request.data.get('substitute', {}).get('name', team_data.substitute_name)
             team_data.substitute_grade = request.data.get('substitute', {}).get('grade', team_data.substitute_grade)
             team_data.teacher_name = request.data.get('teacher_name', team_data.teacher_name)
-            team_data.category = request.data.get('category', team_data.category)
-            team_data.programming_language = request.data.get('programming_language', team_data.programming_language)
+            team_data.category.name = request.data.get('category', team_data.category.name)
+            team_data.programming_language.name = request.data.get('programming_language', team_data.programming_language.name)
 
             team_data.save()  # Mentsük el az új adatokat
 
@@ -54,3 +55,100 @@ class TeamData(APIView):
         except UserData.DoesNotExist:
             return Response({'error': 'Team data not found'}, status=404)
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .models import Category, ProgrammingLanguage
+from django.http import JsonResponse
+
+# Kategóriák lekérése
+class CategoryList(APIView):
+    permission_classes = [AllowAny]  # Bárki hozzáférhet
+
+    def get(self, request):
+        categories = Category.objects.all()
+        categories_list = [{"id": category.id, "name": category.name} for category in categories]
+        return JsonResponse({
+            "status": "Ok",
+            "categories": categories_list
+        }, status=200)
+
+# Programozási nyelvek lekérése
+class ProgrammingLanguageList(APIView):
+    permission_classes = [AllowAny]  # Bárki hozzáférhet
+
+    def get(self, request):
+        languages = ProgrammingLanguage.objects.all()
+        languages_list = [{"id": language.id, "name": language.name} for language in languages]
+        return JsonResponse({
+            "status": "Ok",
+            "programmingLanguages": languages_list
+        }, status=200)
+    
+# Kategóriák hozzáadása
+class AddCategory(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if not request.user.is_staff:
+            return JsonResponse({
+                "status": "Error",
+                "error": "Unauthorized access",
+            }, status=403)
+
+        data = request.data
+        category_name = data.get('name')
+
+        if not category_name:
+            return JsonResponse({
+                "status": "Error",
+                "error": "Category name is required",
+            }, status=400)
+
+        # Ellenőrizzük, hogy már létezik-e a kategória
+        if Category.objects.filter(name=category_name).exists():
+            return JsonResponse({
+                "status": "Error",
+                "error": "Category already exists",
+            }, status=400)
+
+        # Hozzáadjuk az új kategóriát
+        category = Category.objects.create(name=category_name)
+        return JsonResponse({
+            "status": "Ok",
+            "message": f"Category '{category_name}' added successfully",
+        }, status=201)
+
+# Programozási nyelvek hozzáadása
+class AddProgrammingLanguage(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if not request.user.is_staff:
+            return JsonResponse({
+                "status": "Error",
+                "error": "Unauthorized access",
+            }, status=403)
+
+        data = request.data
+        language_name = data.get('name')
+
+        if not language_name:
+            return JsonResponse({
+                "status": "Error",
+                "error": "Programming language name is required",
+            }, status=400)
+
+        # Ellenőrizzük, hogy már létezik-e a programnyelv
+        if ProgrammingLanguage.objects.filter(name=language_name).exists():
+            return JsonResponse({
+                "status": "Error",
+                "error": "Programming language already exists",
+            }, status=400)
+
+        # Hozzáadjuk az új programozási nyelvet
+        language = ProgrammingLanguage.objects.create(name=language_name)
+        return JsonResponse({
+            "status": "Ok",
+            "message": f"Programming language '{language_name}' added successfully",
+        }, status=201)

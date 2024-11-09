@@ -4,8 +4,9 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import EditTeam from "./pages/EditTeam"; 
+import EditTeam from "./pages/EditTeam";
 import Header from "./components/Header";
+import AddCategoryAndLanguage from "./pages/AddCategoryAndLanguage"; // import the new page
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -15,7 +16,7 @@ const App = () => {
     if (loggedInUser) {
       setUser(loggedInUser);
     }
-  }, []); // Ha be van jelentkezve, automatikusan beállítjuk a felhasználót
+  }, []);
 
   return (
     <Router>
@@ -38,6 +39,8 @@ const App = () => {
         <Route path="/admin-dashboard" element={user && user.isAdmin ? <AdminDashboard /> : <Navigate to="/" />} />
         <Route path="/user-dashboard" element={user && !user.isAdmin ? <UserDashboard /> : <Navigate to="/" />} />
         <Route path="/edit-team/:username" element={user && user.isAdmin ? <EditTeam /> : <Navigate to="/" />} />
+        {/* Add new route for the AddCategoryAndLanguage page */}
+        <Route path="/add-category-language" element={user && user.isAdmin ? <AddCategoryAndLanguage /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );
