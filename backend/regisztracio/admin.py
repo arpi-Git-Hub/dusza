@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import CsapatRegisztracio
+from .models import UserData
 
-admin.site.register(CsapatRegisztracio)
+admin.site.register(UserData)
