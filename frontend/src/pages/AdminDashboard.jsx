@@ -6,14 +6,35 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem("isAdmin");
-    if (isAdmin !== "true") {
+    const userData = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!userData || userData.isAdmin !== true) {
       navigate("/login"); // Ha nem admin, irányítsuk a login oldalra
     } else {
-      const storedTeams = JSON.parse(localStorage.getItem("teams")) || [];
-      setTeams(storedTeams);
+      // Az admin számára kérhetjük le az összes csapat adatát a backendből
+      fetchTeams();
     }
   }, [navigate]);
+
+  const fetchTeams = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/auth/admin-dashboard/", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setTeams(data.user_data);
+        localStorage.setItem("teams", JSON.stringify(data.user_data));
+      } else {
+        alert("Hiba történt a csapatok lekérése során.");
+      }
+    } catch (error) {
+      console.error("Hiba a csapatok lekérésekor:", error);
+    }
+  };
 
   const handleDelete = (username) => {
     const updatedTeams = teams.filter((team) => team.username !== username);
@@ -40,22 +61,24 @@ const AdminDashboard = () => {
                 <th className="px-6 py-4">Csapattagok</th>
                 <th className="px-6 py-4">Tanár neve</th>
                 <th className="px-6 py-4">Kategória</th>
-                <th className="px-6 py-4">Nyelv</th>
+                <th className="px-6 py-4">Programozási nyelv</th>
+                <th className="px-6 py-4">Substitute</th>
                 <th className="px-6 py-4">Akciók</th>
               </tr>
             </thead>
             <tbody>
               {teams.map((team) => (
                 <tr key={team.username} className="border-b hover:bg-gray-50">
-                  <td className="px-6 py-4">{team.teamName}</td>
-                  <td className="px-6 py-4">{team.schoolName}</td>
+                  <td className="px-6 py-4">{team.team_name}</td>
+                  <td className="px-6 py-4">{team.school_name}</td>
                   <td className="px-6 py-4">
-                    {team.member1.name}, {team.member2.name}, {team.member3.name}
-                    {team.substitute && `, ${team.substitute.name}`}
+                    {team.member1_name}, {team.member2_name}, {team.member3_name}
+                    {team.substitute_name && `, ${team.substitute_name}`}
                   </td>
-                  <td className="px-6 py-4">{team.teacherName}</td>
+                  <td className="px-6 py-4">{team.teacher_name}</td>
                   <td className="px-6 py-4">{team.category}</td>
-                  <td className="px-6 py-4">{team.language}</td>
+                  <td className="px-6 py-4">{team.programming_language}</td>
+                  <td className="px-6 py-4">{team.substitute_name ? team.substitute_name : 'Nincs'}</td>
                   <td className="px-6 py-4 flex items-center">
                     <button
                       onClick={() => handleDelete(team.username)}

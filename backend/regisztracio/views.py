@@ -5,11 +5,16 @@ import json
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.http import JsonResponse
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import UserData
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from django.forms import model_to_dict
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from .models import UserData
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.response import Response
 
+# Regisztrációs funkció
 @require_http_methods(["POST"])
 def register(request: WSGIRequest):
     try:
@@ -17,7 +22,7 @@ def register(request: WSGIRequest):
         new_user = User.objects.create_user(
             username=data["username"],
             password=data["password"],
-            is_staff=False
+            is_staff=False  # nem admin, az alapértelmezett
         )
     except IntegrityError:
         return JsonResponse({"error": "User with this username already exists"}, status=403)
@@ -41,7 +46,7 @@ def register(request: WSGIRequest):
 
     return JsonResponse({"status": "Ok"}, status=200)
 
-
+# Bejelentkezési funkció
 @require_http_methods(["POST"])
 def login(request: WSGIRequest):
     request.session.clear_expired()
@@ -66,13 +71,88 @@ def login(request: WSGIRequest):
     refresh = RefreshToken.for_user(user)
     access_token = str(refresh.access_token)
 
-    # Válaszban küldd vissza az access és refresh tokeneket, valamint a felhasználói adatokat
+    # Admin felhasználó esetén ne kérjük le a saját UserData-t
+    if user.is_staff:  # Admin felhasználó
+        user_data = None
+    else:
+        # Ha nem admin, akkor kérjük le a UserData rekordot
+        try:
+            user_data = model_to_dict(UserData.objects.get(user=user))
+        except UserData.DoesNotExist:
+            user_data = None
+
     return JsonResponse({
         "status": "Ok",
         "error": None,
-        "access": access_token,  # Az access token
-        "refresh": str(refresh),  # A refresh token
-        "user_data": model_to_dict(UserData.objects.get(user=user)),
+        "access": access_token,
+        "refresh": str(refresh),
+        "user_data": user_data if user_data else {
+            "username": user.username,
+            "isAdmin": user.is_staff,
+        },
     }, status=200)
 
+class AdminDashboard(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request: WSGIRequest):
+        if not request.user.is_staff:
+            return JsonResponse({
+                "status": "Error",
+                "error": "Unauthorized access",
+            }, status=403)
+
+        all_user_data = UserData.objects.all()
+
+        # Összekapcsoljuk a UserData rekordot a User username-jével
+        user_data_list = []
+        for user_data in all_user_data:
+            user_dict = model_to_dict(user_data)
+            user_dict["username"] = user_data.user.username  # hozzáadjuk a username-t
+            user_data_list.append(user_dict)
+
+        return JsonResponse({
+            "status": "Ok",
+            "user_data": user_data_list
+        }, status=200)
+    
+class EditTeam(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, username):
+        """
+        Lekéri a csapat adatokat a csapat neve (username) alapján.
+        """
+        try:
+            user_data = UserData.objects.get(user__username=username)
+            user_dict = model_to_dict(user_data)
+            user_dict["username"] = user_data.user.username  # hozzáadjuk a username-t
+            return JsonResponse({
+                "status": "Ok",
+                "user_data": user_dict
+            }, status=200)
+        except UserData.DoesNotExist:
+            return JsonResponse({
+                "status": "Error",
+                "error": "User not found"
+            }, status=404)
+
+    def put(self, request, username):
+        """
+        Frissíti a csapat adatokat a csapat neve (username) alapján.
+        """
+        try:
+            user_data = UserData.objects.get(user__username=username)
+            # Frissítjük a csapat adatokat az érkező adatokkal
+            for key, value in request.data.items():
+                setattr(user_data, key, value)
+            user_data.save()
+            return JsonResponse({
+                "status": "Ok",
+                "message": "Team data updated successfully"
+            }, status=200)
+        except UserData.DoesNotExist:
+            return JsonResponse({
+                "status": "Error",
+                "error": "User not found"
+            }, status=404)

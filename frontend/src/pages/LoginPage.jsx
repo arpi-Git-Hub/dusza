@@ -9,37 +9,37 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     const payload = { username, password };
-  
+
     try {
       const response = await fetch("http://127.0.0.1:8000/auth/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await response.json();
-      console.log("Server response:", data);  // Kiírjuk a válaszadatokat a konzolra
-  
+      console.log("Server response:", data);
+
       if (response.ok) {
         if (data.access && data.refresh && data.user_data) {
+          // Tároljuk a felhasználó adatokat és az admin státuszt
           localStorage.setItem("accessToken", data.access);
           localStorage.setItem("refreshToken", data.refresh);
-          localStorage.setItem("loggedInUser", JSON.stringify(data.user_data));
-          
-          // Ellenőrizzük, hogy az admin jogosultságú felhasználóról van-e szó
-          const isAdmin = data.user_data.role === 'admin'; // Az admin jogosultságok ellenőrzése
-          if (isAdmin) {
-            localStorage.setItem("isAdmin", "true"); // Tároljuk el az admin státuszt
-            navigate("/admin-dashboard"); // Ha admin, irányítsuk az admin dashboardra
-          } else {
-            localStorage.setItem("isAdmin", "false"); // Ha nem admin, tároljuk el a nem admin státuszt
-            navigate("/user-dashboard"); // Ha nem admin, irányítsuk a user dashboardra
-          }
+          localStorage.setItem(
+            "loggedInUser",
+            JSON.stringify({
+              username: data.user_data.username,
+              isAdmin: data.user_data.isAdmin,
+            })
+          );
+
+          // Navigálás: admin dashboard vagy user dashboard
+          navigate(data.user_data.isAdmin ? "/admin-dashboard" : "/user-dashboard");
         } else {
           alert("Hiba történt a válaszban, hiányoznak az adatok.");
         }
       } else {
-        alert("Érvénytelen felhasználónév vagy jelszó!");
+        alert("Hiba történt a bejelentkezés során.");
       }
     } catch (error) {
       console.error("Hiba a bejelentkezés során:", error);
