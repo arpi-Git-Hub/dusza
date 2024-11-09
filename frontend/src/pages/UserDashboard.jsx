@@ -64,7 +64,6 @@ const UserDashboard = () => {
       }
     } catch (error) {
       console.error("Hiba történt a csapatadatok betöltésekor:", error);
-      alert("Hiba történt a csapatadatok betöltésekor.");
     }
   };
 
