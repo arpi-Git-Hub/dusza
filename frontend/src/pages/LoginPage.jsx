@@ -32,9 +32,10 @@ const LoginPage = () => {
               isAdmin: data.user_data.isAdmin,
             })
           );
-
-          // Navigálás: admin dashboard vagy user dashboard
-          navigate(data.user_data.isAdmin ? "/admin-dashboard" : "/user-dashboard");
+          
+          navigate("/admin-dashboard")
+          window.location.reload();
+          
         } else {
           alert("Hiba történt a válaszban, hiányoznak az adatok.");
         }
