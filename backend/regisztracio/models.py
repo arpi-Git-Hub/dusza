@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from api.models import Category, ProgrammingLanguage
 
 class UserData(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
@@ -14,10 +15,9 @@ class UserData(models.Model):
     substitute_name = models.CharField(max_length=100, blank=True, null=True)
     substitute_grade = models.CharField(max_length=20, blank=True, null=True)
     teacher_name = models.CharField(max_length=100)
-    category = models.CharField(max_length=20)
-    programming_language = models.CharField(max_length=20)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    programming_language = models.ForeignKey(ProgrammingLanguage, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username}'s team data"
     
-

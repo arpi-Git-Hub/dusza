@@ -6,17 +6,16 @@ const Header = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // A bejelentkezett felhasználó adatainak beolvasása a localStorage-ból
     const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
     if (loggedInUser) {
       setUser(loggedInUser);
     }
-  }, []); // Üres lista, hogy csak egyszer fusson le, amikor a komponens betöltődik
+  }, []);
 
   const handleLogout = () => {
-    localStorage.clear();  // Kijelentkezés után töröljük az adatokat a localStorage-ból
-    setUser(null);         // Kijelentkezés után töröljük a felhasználót
-    navigate("/");         // Bejelentkezési oldalra irányít vissza
+    localStorage.clear();  // Clear user data on logout
+    setUser(null);
+    navigate("/");         // Redirect to login page
   };
 
   return (
@@ -26,12 +25,14 @@ const Header = () => {
         {user && (
           <>
             {user.isAdmin ? (
-              <Link to="/admin-dashboard" className="hover:underline">
-                Admin felület
-              </Link>
-            ) : (<Link to="/user-dashboard" className="hover:underline">
-            Felhasználói felület
-          </Link>)}
+              <Link to="/admin-dashboard" className="hover:underline">Admin felület</Link>
+            ) : (
+              <Link to="/user-dashboard" className="hover:underline">Felhasználói felület</Link>
+            )}
+            {/* Only Admins can access this page */}
+            {user.isAdmin && (
+              <Link to="/add-category-language" className="hover:underline">Add Category/Language</Link>
+            )}
             <button
               onClick={handleLogout}
               className="bg-red-500 text-white px-4 py-2 rounded-md"

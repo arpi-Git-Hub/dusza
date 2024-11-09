@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
@@ -17,8 +17,28 @@ const RegisterPage = () => {
   const [teacherName, setTeacherName] = useState("");
   const [category, setCategory] = useState("");
   const [language, setLanguage] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [languages, setLanguages] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategoriesAndLanguages = async () => {
+      const categoryResponse = await fetch("http://127.0.0.1:8000/api/categories/");
+      const languageResponse = await fetch("http://127.0.0.1:8000/api/programming-languages/");
+
+      const categoryData = await categoryResponse.json();
+      const languageData = await languageResponse.json();
+
+      if (categoryResponse.ok) {
+        setCategories(categoryData.categories);
+      }
+      if (languageResponse.ok) {
+        setLanguages(languageData.programmingLanguages);
+      }
+    };
+    fetchCategoriesAndLanguages();
+  }, []);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -36,8 +56,8 @@ const RegisterPage = () => {
       substitute_name: substituteName,
       substitute_grade: substituteGrade,
       teacher_name: teacherName,
-      category,
-      programming_language: language,
+      category_id: category,  // category id küldése
+      programming_language_id: language,  // programming_language id küldése
     };
   
     try {
@@ -58,193 +78,167 @@ const RegisterPage = () => {
       alert("Hiba történt a regisztráció során.");
     }
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-400 to-blue-600">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Csapat regisztráció</h2>
+      <div className="max-w-lg w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-8">Csapat regisztráció</h2>
         <form onSubmit={handleRegister} className="space-y-6">
           {/* Felhasználónév */}
-          <div>
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Felhasználónév</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {/* Jelszó */}
-          <div>
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Jelszó</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {/* Csapat neve */}
-          <div>
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Csapat neve</label>
             <input
               type="text"
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
-              className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {/* Iskola neve */}
-          <div>
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Iskola neve</label>
             <input
               type="text"
               value={schoolName}
               onChange={(e) => setSchoolName(e.target.value)}
-              className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {/* Csapattagok */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-700">Csapattagok:</h3>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Csapattag 1 neve</label>
-              <input
-                type="text"
-                value={member1Name}
-                onChange={(e) => setMember1Name(e.target.value)}
-                className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Csapattag 1 évfolyam</label>
-              <input
-                type="text"
-                value={member1Grade}
-                onChange={(e) => setMember1Grade(e.target.value)}
-                className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Csapattag 2 neve</label>
-              <input
-                type="text"
-                value={member2Name}
-                onChange={(e) => setMember2Name(e.target.value)}
-                className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Csapattag 2 évfolyam</label>
-              <input
-                type="text"
-                value={member2Grade}
-                onChange={(e) => setMember2Grade(e.target.value)}
-                className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Csapattag 3 neve</label>
-              <input
-                type="text"
-                value={member3Name}
-                onChange={(e) => setMember3Name(e.target.value)}
-                className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Csapattag 3 évfolyam</label>
-              <input
-                type="text"
-                value={member3Grade}
-                onChange={(e) => setMember3Grade(e.target.value)}
-                className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+          <div className="space-y-6">
+            <h3 className="font-semibold text-lg text-gray-700">Csapattagok</h3>
+            
+            {[{name: member1Name, grade: member1Grade, setterName: setMember1Name, setterGrade: setMember1Grade},
+              {name: member2Name, grade: member2Grade, setterName: setMember2Name, setterGrade: setMember2Grade},
+              {name: member3Name, grade: member3Grade, setterName: setMember3Name, setterGrade: setMember3Grade}
+            ].map((member, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4" key={index}>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Csapattag {index + 1} neve</label>
+                  <input
+                    type="text"
+                    value={member.name}
+                    onChange={(e) => member.setterName(e.target.value)}
+                    className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Csapattag {index + 1} évfolyam</label>
+                  <input
+                    type="number"
+                    value={member.grade}
+                    onChange={(e) => member.setterGrade(e.target.value)}
+                    className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+            ))}
 
             {/* Pótló tag */}
-            <div>
+            <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Pótló tag neve (nem kötelező)</label>
               <input
                 type="text"
                 value={substituteName}
                 onChange={(e) => setSubstituteName(e.target.value)}
-                className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Pótló tag évfolyam (nem kötelező)</label>
               <input
-                type="text"
+                type="number"
                 value={substituteGrade}
                 onChange={(e) => setSubstituteGrade(e.target.value)}
-                className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
           {/* Felkészítő tanár */}
-          <div>
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Felkészítő tanár neve</label>
             <input
               type="text"
               value={teacherName}
               onChange={(e) => setTeacherName(e.target.value)}
-              className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {/* Kategória */}
-          <div>
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Kategória</label>
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => setCategory(e.target.value)}  // Itt is állapotot módosítunk
               className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="">Válassz egy kategóriát</option>
-              <option value="junior">Junior</option>
-              <option value="senior">Senior</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}> {/* Itt küldd az ID-t, ne a nevet */}
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
 
           {/* Nyelv */}
-          <div>
+          <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">Nyelv</label>
             <select
               value={language}
-              onChange={(e) => setLanguage(e.target.value)}
+              onChange={(e) => setLanguage(e.target.value)}  // Itt is állapotot módosítunk
               className="mt-2 block w-full p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="">Válassz egy nyelvet</option>
-              <option value="javascript">JavaScript</option>
-              <option value="python">Python</option>
+              {languages.map((lang) => (
+                <option key={lang.id} value={lang.id}> {/* Itt küldd az ID-t, ne a nevet */}
+                  {lang.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Regisztráció */}
-          <div>
-            <button type="submit" className="w-full bg-blue-600 text-white py-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          {/* Regisztráció gomb */}
+          <div className="space-y-4">
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
               Regisztrálás
             </button>
           </div>

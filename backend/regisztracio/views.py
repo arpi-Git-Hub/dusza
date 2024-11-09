@@ -11,6 +11,7 @@ from django.forms import model_to_dict
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from .models import UserData
+from api.models import Category, ProgrammingLanguage
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 
@@ -19,15 +20,23 @@ from rest_framework.response import Response
 def register(request: WSGIRequest):
     try:
         data = json.loads(request.body)
+
+        # Kategória és programozási nyelv validálása
+        category = Category.objects.get(id=data["category_id"])
+        programming_language = ProgrammingLanguage.objects.get(id=data["programming_language_id"])
+
         new_user = User.objects.create_user(
             username=data["username"],
             password=data["password"],
-            is_staff=False  # nem admin, az alapértelmezett
+            is_staff=False
         )
     except IntegrityError:
-        return JsonResponse({"error": "User with this username already exists"}, status=403)
+        return JsonResponse({"status": "Error", "error": "User already exists."}, status=400)
+    except Exception as e:
+        return JsonResponse({"status": "Error", "error": str(e)}, status=400)
 
-    UserData.objects.create(
+    # UserData modell mentése
+    user_data = UserData.objects.create(
         user=new_user,
         team_name=data["team_name"],
         school_name=data["school_name"],
@@ -37,14 +46,15 @@ def register(request: WSGIRequest):
         member2_grade=data["member2_grade"],
         member3_name=data["member3_name"],
         member3_grade=data["member3_grade"],
-        substitute_name=data.get("substitute_name"),
-        substitute_grade=data.get("substitute_grade"),
+        substitute_name=data.get("substitute_name", ""),
+        substitute_grade=data.get("substitute_grade", ""),
         teacher_name=data["teacher_name"],
-        category=data["category"],
-        programming_language=data["programming_language"],
+        category=category,
+        programming_language=programming_language
     )
 
-    return JsonResponse({"status": "Ok"}, status=200)
+    return JsonResponse({"status": "Ok", "message": "User registered successfully"}, status=201)
+
 
 # Bejelentkezési funkció
 @require_http_methods(["POST"])
