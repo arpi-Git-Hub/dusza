@@ -17,13 +17,12 @@ const Header = () => {
   const username = localStorage.getItem("username");
 
   return (
-    <header className="bg-blue-600 text-white py-4">
-      <div className="container mx-auto flex justify-between items-center">
+    <header className="bg-blue-600 text-white py-4 flex items-center">
         <div>
           <Link to="/" className="text-xl font-semibold pl-6">Csapatkezelő</Link>
         </div>
 
-        <div className="space-x-6">
+        <div className="space-x-6 ml-auto">
           {/* Ha be van jelentkezve felhasználó */}
           {username && (
             <span className="text-lg">{`Üdv, ${username}`}</span>
@@ -56,7 +55,6 @@ const Header = () => {
             )}
           </nav>
         </div>
-      </div>
     </header>
   );
 };
