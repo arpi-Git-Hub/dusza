@@ -24,8 +24,8 @@ const RegisterPage = () => {
 
   useEffect(() => {
     const fetchCategoriesAndLanguages = async () => {
-      const categoryResponse = await fetch("http://127.0.0.1:8000/api/categories/");
-      const languageResponse = await fetch("http://127.0.0.1:8000/api/programming-languages/");
+      const categoryResponse = await fetch("http://18.192.213.181:8000/api/categories/");
+      const languageResponse = await fetch("http://18.192.213.181:8000/api/programming-languages/");
 
       const categoryData = await categoryResponse.json();
       const languageData = await languageResponse.json();
@@ -61,7 +61,7 @@ const RegisterPage = () => {
     };
   
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/register/", {
+      const response = await fetch("http://18.192.213.181:8000/auth/register/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

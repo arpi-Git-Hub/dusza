@@ -14,7 +14,7 @@ const UserDashboard = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/token/refresh/", {
+      const response = await fetch("http://18.192.213.181:8000/auth/token/refresh/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,7 +45,7 @@ const UserDashboard = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/team-data/", {
+      const response = await fetch("http://18.192.213.181:8000/api/team-data/", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`, // Használjuk a token-t az Authorization fejlécben
@@ -117,8 +117,8 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-400 to-blue-600 flex justify-center items-center py-12 px-6">
-      <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-8">
+    <div className="min-h-screen bg-gradient-to-r from-blue-400 to-blue-600 flex flex-col justify-center items-center py-12 px-6">
+      <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-8 mb-10">
         <h2 className="text-3xl font-bold text-center text-blue-600 mb-8">Csapatadatok módosítása</h2>
 
         <form onSubmit={handleUpdate} className="space-y-6">
@@ -338,6 +338,13 @@ const UserDashboard = () => {
             </button>
           </div>
         </form>
+      </div>
+
+      <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-8">
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-8">Üzenetek</h2>
+            <div className="border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 pl-2 pr-10 pb-10">
+                asd
+            </div>
       </div>
     </div>
   );

@@ -31,7 +31,7 @@ const Header = () => {
             )}
             {/* Only Admins can access this page */}
             {user.isAdmin && (
-              <Link to="/add-category-language" className="hover:underline">Add Category/Language</Link>
+              <Link to="/add-category-language" className="hover:underline">Kategória/programozási nyelv hozzáadása</Link>
             )}
             <button
               onClick={handleLogout}
