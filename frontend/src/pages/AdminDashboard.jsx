@@ -62,7 +62,7 @@ const AdminDashboard = () => {
                 <th className="px-6 py-4">Tanár neve</th>
                 <th className="px-6 py-4">Kategória</th>
                 <th className="px-6 py-4">Programozási nyelv</th>
-                <th className="px-6 py-4">Substitute</th>
+                <th className="px-6 py-4">Pótló tag neve</th>
                 <th className="px-6 py-4">Akciók</th>
               </tr>
             </thead>
