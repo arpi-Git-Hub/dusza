@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 const AddCategoryAndLanguage = () => {
   const [categoryName, setCategoryName] = useState("");
   const [languageName, setLanguageName] = useState("");
+  const [recipientName, setRecipientName] = useState("");
+  const [messageContent, setMessageContent] = useState("");
   const [categories, setCategories] = useState([]);
   const [languages, setLanguages] = useState([]);
 
@@ -61,6 +63,33 @@ const AddCategoryAndLanguage = () => {
       alert(data.error);
     }
   };
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await fetch('http://18.192.213.181:8000/api/send-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: recipientName,
+                content: messageContent,
+            }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+            alert(data.message);
+            setRecipientName('');
+            setMessageContent('');
+        } else {
+            alert(data.error || "Hiba történt az üzenet küldésekor.");
+        }
+    } catch (error) {
+        console.error("Hiba történt:", error);
+        alert("Hiba történt az üzenet küldésekor.");
+    }
+};
 
   return (
       <div className="min-h-screen bg-gradient-to-r from-blue-400 to-blue-600 ml-15">
@@ -144,19 +173,28 @@ const AddCategoryAndLanguage = () => {
       <div className="w-1/2">
           <h2 className="text-3xl font-semibold text-white mb-6">Üzenet írása</h2>
           <div className="overflow-x-auto bg-white shadow-lg rounded-lg p-10 mr-3 text-left">
-              <label className="block text-sm font-medium text-gray-700">Címzett:</label>
-              <input 
-              type="text" 
-              placeholder="Címzett neve" 
-              className="mt-2 mb-5 w-1/2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"/> <br />
-
-              <label className="block text-sm font-medium text-gray-700">Üzenet:</label>
-              <textarea
-              rows="5"
-              placeholder="Üzenet írása" 
-              className="mt-2 mb-5 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 align-text-top"/>
-
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition mb-6">Küldés</button>
+          <form onSubmit={sendMessage}>
+                        <label className="block text-sm font-medium text-gray-700">Címzett:</label>
+                        <input
+                            type="text"
+                            value={recipientName}
+                            onChange={(e) => setRecipientName(e.target.value)}
+                            placeholder="Címzett neve"
+                            className="mt-2 mb-5 w-1/2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                        />
+                        <br />
+                        <label className="block text-sm font-medium text-gray-700">Üzenet:</label>
+                        <textarea
+                            rows="5"
+                            value={messageContent}
+                            onChange={(e) => setMessageContent(e.target.value)}
+                            placeholder="Üzenet írása"
+                            className="mt-2 mb-5 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 align-text-top"
+                        />
+                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition mb-6">
+                            Küldés
+                        </button>
+                    </form>
           </div>
       </div>
 

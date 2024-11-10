@@ -63,6 +63,7 @@ const AdminDashboard = () => {
                 <th className="px-6 py-4">Kategória</th>
                 <th className="px-6 py-4">Programozási nyelv</th>
                 <th className="px-6 py-4">Pótló tag neve</th>
+                <th className="px-6 py-4">Státusz</th>
                 <th className="px-6 py-4">Akciók</th>
               </tr>
             </thead>
@@ -79,6 +80,7 @@ const AdminDashboard = () => {
                   <td className="px-6 py-4">{team.category}</td>
                   <td className="px-6 py-4">{team.programming_language}</td>
                   <td className="px-6 py-4">{team.substitute_name ? team.substitute_name : 'Nincs'}</td>
+                  <td className="approve px-6 py-4">{team.status}</td>
                   <td className="px-6 py-4 flex items-center">
                     <button
                       onClick={() => handleDelete(team.username)}
@@ -91,6 +93,12 @@ const AdminDashboard = () => {
                       className="bg-blue-500 text-white ml-5 px-4 py-2 rounded-md hover:bg-blue-600 transition"
                     >
                       Módosítás
+                    </button>
+                    <button
+                      onClick={() => approveTeam()}
+                      className="bg-green-600 text-white ml-5 px-4 py-2 rounded-md hover:bg-green-700 transition"
+                    >
+                      Jóváhagyás
                     </button>
                   </td>
                 </tr>
