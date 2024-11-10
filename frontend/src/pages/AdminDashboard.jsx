@@ -17,7 +17,7 @@ const AdminDashboard = () => {
 
   const fetchTeams = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/admin-dashboard/", {
+      const response = await fetch("http://18.192.213.181:8000/auth/admin-dashboard/", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,

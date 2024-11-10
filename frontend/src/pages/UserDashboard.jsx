@@ -14,7 +14,7 @@ const UserDashboard = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/auth/token/refresh/", {
+      const response = await fetch("http://18.192.213.181:8000/auth/token/refresh/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,7 +45,7 @@ const UserDashboard = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/team-data/", {
+      const response = await fetch("http://18.192.213.181:8000/api/team-data/", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`, // Használjuk a token-t az Authorization fejlécben

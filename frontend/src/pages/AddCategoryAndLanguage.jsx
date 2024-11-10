@@ -8,8 +8,8 @@ const AddCategoryAndLanguage = () => {
 
   useEffect(() => {
     const fetchCategoriesAndLanguages = async () => {
-      const categoryResponse = await fetch("http://127.0.0.1:8000/api/categories/");
-      const languageResponse = await fetch("http://127.0.0.1:8000/api/programming-languages/");
+      const categoryResponse = await fetch("http://18.192.213.181:8000/api/categories/");
+      const languageResponse = await fetch("http://18.192.213.181:8000/api/programming-languages/");
 
       const categoryData = await categoryResponse.json();
       const languageData = await languageResponse.json();
@@ -25,7 +25,7 @@ const AddCategoryAndLanguage = () => {
   }, []);
 
   const handleAddCategory = async () => {
-    const response = await fetch("http://127.0.0.1:8000/api/categories/add/", {
+    const response = await fetch("http://18.192.213.181:8000/api/categories/add/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ const AddCategoryAndLanguage = () => {
   };
 
   const handleAddLanguage = async () => {
-    const response = await fetch("http://127.0.0.1:8000/api/programming-languages/add/", {
+    const response = await fetch("http://18.192.213.181:8000/api/programming-languages/add/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

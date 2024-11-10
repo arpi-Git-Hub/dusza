@@ -17,7 +17,7 @@ const EditTeam = () => {
 
   const fetchTeamData = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/auth/admin-dashboard/${username}/`, {
+      const response = await fetch(`http://18.192.213.181:8000/auth/admin-dashboard/${username}/`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
@@ -55,7 +55,7 @@ const EditTeam = () => {
     };
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/auth/admin-dashboard/${username}/`, {
+      const response = await fetch(`http://18.192.213.181:8000/auth/admin-dashboard/${username}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
